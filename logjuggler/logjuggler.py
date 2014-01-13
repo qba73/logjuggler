@@ -59,7 +59,7 @@ def time_to_iso(datetime_obj):
     This function allows to change the date back to string
     if necessary (eg, for printing logs, etc)
     """
-    return datetime_obj.isoformat()
+    return datetime_obj.isoformat(sep=' ')
 
 
 def time_str_to_datetime(timestring):
