@@ -210,10 +210,34 @@ def well_formed_timestamp(timestamp):
     """
     try:
         time_str_to_datetime(timestamp)
-        return
+        return timestamp
     except ValueError:
         raise argparse.ArgumentError('Timestamp {timestamp} is not well formed'.format(
             timestmp=timestamp))
+
+
+# functions for profiling with decorator
+
+def get_log_level(log_level, log_entries):
+    return [res for res in search_results(log_level_filter(log_level), log_entries)]
+
+
+def get_sid(sid, log_entries):
+    return [res for res in search_results(session_id_filter(sid), log_entries)]
+
+
+def get_bid(bid, log_entries):
+    return [res for res in search_results(business_id_filter(bid), log_entries)]
+
+
+def get_rid(rid, log_entries):
+    return [res for res in search_results(request_id_filter(rid), log_entries)]
+
+
+def get_dates(start_date, end_date, log_entries):
+    return [res for res in (search_results(date_range_filter(
+        start_date=arg_dict.get('start'), end_date=arg_dict.get('end')), log_entries))
+    ]
 
 
 if __name__ == "__main__":
@@ -227,13 +251,13 @@ if __name__ == "__main__":
     log_level_parser = subparsers.add_parser('loglevel')
     log_level_parser.add_argument('loglevel', action='store', choices=('DEBUG', 'INFO', 'WARN', 'ERROR'))
 
-    business_id_parser = subparsers.add_parser('business_id')
+    business_id_parser = subparsers.add_parser('bid')
     business_id_parser.add_argument('bid', action='store', help='Show logs with business id')
 
-    session_id_parser = subparsers.add_parser('session_id')
+    session_id_parser = subparsers.add_parser('sid')
     session_id_parser.add_argument('sid', action='store', help='Show logs with session id')
 
-    request_id_parser = subparsers.add_parser('request_id')
+    request_id_parser = subparsers.add_parser('rid')
     request_id_parser.add_argument('rid', action='store', help='Show logs with request id.')
 
     date_parser = subparsers.add_parser('date')
@@ -242,21 +266,25 @@ if __name__ == "__main__":
 
     arg_dict = vars(parser.parse_args())
 
-    log_entries = [Log(log_time(l), log_level(l), session_id(l), business_id(l),
-                       request_id(l), log_message(l)) for l in read_log_file(arg_dict.get('logfile'))]
+    log_entries = (Log(log_time(l), log_level(l), session_id(l), business_id(l),
+                       request_id(l), log_message(l)) for l in read_log_file(arg_dict.get('logfile')))
 
     if arg_dict.get('loglevel'):
-        display_search_results(search_results(log_level_filter(arg_dict.get('loglevel')), log_entries))
+        result = get_log_level(arg_dict.get('loglevel'), log_entries)
+        display_search_results(result)
 
     if arg_dict.get('bid'):
-        display_search_results(search_results(business_id_filter(arg_dict.get('bid')), log_entries))
+        result = get_bid(arg_dict.get('bid'), log_entries)
+        display_search_results(result)
 
     if arg_dict.get('sid'):
-        display_search_results(search_results(session_id_filter(arg_dict.get('sid')), log_entries))
+        result = get_sid(arg_dict.get('sid'), log_entries)
+        display_search_results(result)
 
     if arg_dict.get('rid'):
-        display_search_results(search_results(request_id_filter(arg_dict.get('rid')), log_entries))
+        result = get_rid(arg_dict.get('rid'), log_entries)
+        display_search_results(result)
 
     if arg_dict.get('start') and arg_dict.get('end'):
-        display_search_results(search_results(date_range_filter(
-            start_date=arg_dict.get('start'), end_date=arg_dict.get('end')), log_entries))
+        result = get_dates(arg_dict.get('start'), arg_dict.get('end'), log_entries)
+        display_search_results(result)
