@@ -84,7 +84,7 @@ def time_str_to_datetime(timestring):
     try:
         return datetime.datetime.strptime(timestring, '%Y-%m-%d %H:%M:%S')
     except ValueError as e:
-        print("Time string is malformed. Got exception: \n{0}".format(e))
+        print("Datetime string is malformed. Got exception:\n{0}".format(e))
 
 
 def search_results(query_filter, logs):
@@ -199,23 +199,6 @@ def display_search_results(results):
         display_log(log)
 
 
-def well_formed_timestamp(timestamp):
-    """Validates if timestamp is well formed.
-
-    Args:
-        timestmp: str
-
-    Raises:
-        argparse.ArgumentError if datetime object can not be created from timestamp.
-    """
-    try:
-        time_str_to_datetime(timestamp)
-        return timestamp
-    except ValueError:
-        raise argparse.ArgumentError('Timestamp {timestamp} is not well formed'.format(
-            timestmp=timestamp))
-
-
 # functions for profiling with decorator
 
 def get_log_level(log_level, log_entries):
@@ -249,16 +232,21 @@ if __name__ == "__main__":
     subparsers = parser.add_subparsers(help='Log filters')
 
     log_level_parser = subparsers.add_parser('loglevel')
-    log_level_parser.add_argument('loglevel', action='store', choices=('DEBUG', 'INFO', 'WARN', 'ERROR'))
+    log_level_parser.add_argument('loglevel', action='store',
+                                  choices=('DEBUG', 'INFO', 'WARN', 'ERROR'),
+                                  help="Show logs with given loglevel.")
 
     business_id_parser = subparsers.add_parser('bid')
-    business_id_parser.add_argument('bid', action='store', help='Show logs with business id')
+    business_id_parser.add_argument('bid', action='store',
+                                    help='Show logs with given business id')
 
     session_id_parser = subparsers.add_parser('sid')
-    session_id_parser.add_argument('sid', action='store', help='Show logs with session id')
+    session_id_parser.add_argument('sid', action='store',
+                                   help='Show logs with session id')
 
     request_id_parser = subparsers.add_parser('rid')
-    request_id_parser.add_argument('rid', action='store', help='Show logs with request id.')
+    request_id_parser.add_argument('rid', action='store',
+                                   help='Show logs with request id.')
 
     date_parser = subparsers.add_parser('date')
     date_parser.add_argument('start', action='store', help='Start date.')
