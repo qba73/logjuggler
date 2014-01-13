@@ -61,7 +61,7 @@ class TestLogLineParsers(object):
 
     def test_time_to_iso_should_return_timestamp_in_iso_format(self, log_line):
         assert logjuggler.time_to_iso(logjuggler.log_time(log_line)) ==\
-                                                        '2012-09-13T16:04:22'
+                                                        '2012-09-13 16:04:22'
 
 
 class TestDateRangeFilter(object):
