@@ -5,13 +5,19 @@ import datetime
 import argparse
 
 
+# namedtuple - storing data from a sinle log line
 Log = collections.namedtuple("Log", "date level session_id business_id request_id message")
 
 
 def read_log_file(file):
-    """Yield log entries from the given file, line by line.
+    """Returns a log line genarator.
 
-    Raises IOError if the file can not be found.
+    Args:
+        file: str, location of the log file
+
+    Raises:
+        IOError if the file can not be found.
+
     """
     try:
         with open(file, 'r') as f:
@@ -58,6 +64,7 @@ def time_to_iso(datetime_obj):
     After parsing log file date is stored as a datetime obj.
     This function allows to change the date back to string
     if necessary (eg, for printing logs, etc)
+
     """
     return datetime_obj.isoformat(sep=' ')
 
@@ -65,13 +72,20 @@ def time_to_iso(datetime_obj):
 def time_str_to_datetime(timestring):
     """Return datetime object from the given timestring.
 
-    Timestring should be in the following format: '%Y-%m-%d %H:%M:%S'
+    Args:
+        timestamp: str in format: '%Y-%m-%d %H:%M:%S'
 
+    Returns:
+        datetime obj
+
+    Raises:
+        ValueError, if the string is not well formatted
     """
     try:
         return datetime.datetime.strptime(timestring, '%Y-%m-%d %H:%M:%S')
     except ValueError as e:
-        print("Time string is malformed. Got exception: {0}".format(e))
+        print("Time string is malformed. Got exception: \n{0}".format(e))
+
 
 def search_results(query_filter, logs):
     """Return search results (list) for given query_filter (func) and logs."""
@@ -89,7 +103,12 @@ def convert_to_timestamp(tpl):
 
 
 def log_level_filter(loglevel):
-    """Return a func that filters logs by level."""
+    """Return a func that filters logs by level.
+
+    Args:
+        loglevel: str
+
+    """
     def inner(log_line):
         if log_line.level == str(loglevel).upper():
             return log_line
@@ -97,7 +116,12 @@ def log_level_filter(loglevel):
 
 
 def session_id_filter(sid):
-    """Return a func that filters logs by session id."""
+    """Return a func that filters logs by session id.
+
+    Args:
+        sid: str
+
+    """
     def inner(log_line):
         if log_line.session_id == str(sid):
             return log_line
@@ -105,7 +129,11 @@ def session_id_filter(sid):
 
 
 def business_id_filter(bid):
-    """Return func that filters logs by business id."""
+    """Return func that filters logs by business id.
+
+    Args:
+        bid: str
+    """
     def inner(log_line):
         if log_line.business_id == str(bid):
             return log_line
@@ -113,7 +141,12 @@ def business_id_filter(bid):
 
 
 def request_id_filter(rid):
-    """Return func that filters logs by request id."""
+    """Return func that filters logs by request id.
+
+    Args:
+        rid: str
+
+    """
     def inner(log_line):
         if log_line.request_id == str(rid):
             return log_line
@@ -121,9 +154,15 @@ def request_id_filter(rid):
 
 
 def date_range_filter(start_date, end_date):
-    """
-    Return a func that filters logs between given
-    start and end datetime obj.
+    """Return a func that filter logs between given start and end date.
+
+    Args:
+        start_date: timestamp (str) or datetime obj
+        end_date: timestamp (str) or datetime obj
+
+    Returns:
+        func
+
     """
     if isinstance(start_date, str):
         start_date = time_str_to_datetime(start_date)
@@ -136,9 +175,28 @@ def date_range_filter(start_date, end_date):
     return inner
 
 
+def display_log(log):
+    """Print a log line based on defined template.
+
+    Args:
+        log: namedtuple log obj
+
+    """
+    template = ("{date} {level} sid:{session_id} bid:{business_id} "
+                "rid:{request_id} message:{message}")
+    print template.format(date=log.date, level=log.level, session_id=log.session_id,
+                          business_id=log.business_id, request_id=log.request_id,
+                          message=log.message)
+
+
 def display_search_results(results):
+    """Print log lines from results.
+
+    Args:
+        results: list of filtered logs
+    """
     for log in results:
-        print log
+        display_log(log)
 
 
 def well_formed_timestamp(timestamp):
