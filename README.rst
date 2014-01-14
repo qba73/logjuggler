@@ -12,4 +12,11 @@ A simple log parser.
 Features
 --------
 
-* TODO
+* Parsing logs
+* Searching logs by: level, session_id, business_id, request_id and date range
+* Profiling func executions (calls, time: avg, max, min)
+
+TODO:
+--------
+
+* Python3 support (Travis)
