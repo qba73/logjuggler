@@ -20,3 +20,4 @@ TODO:
 --------
 
 * Python3 support (Travis)
+* Add support for multiple filters
