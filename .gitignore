@@ -41,5 +41,3 @@ docs/_build
 # Vim
 *.swp
 
-# Test data
-data
