@@ -70,50 +70,50 @@ class TestDateRangeFilter(object):
         end_test_date = datetime.datetime(2011, 1, 12, 17, 1, 1)
         test_filter = logjuggler.date_range_filter(
             start_test_date, end_test_date)
-        assert logjuggler.search_results(test_filter, log_lines) == []
+        assert list(logjuggler.search_results(test_filter, log_lines)) == []
 
     def test_line_dates_inside_range(self, log_lines):
         start_test_date = datetime.datetime(2012, 9, 13, 16, 4, 22)
         end_test_date = datetime.datetime(2012, 9, 14, 16, 5, 32)
         test_filter = logjuggler.date_range_filter(
             start_test_date, end_test_date)
-        assert len(logjuggler.search_results(test_filter, log_lines)) == 5
+        assert len(list(logjuggler.search_results(test_filter, log_lines))) == 5
 
     def test_log_dates_inside_and_outside_range(self, log_lines):
         start_test_date = datetime.datetime(2012, 9, 12, 16, 4, 22)
         end_test_date = datetime.datetime(2012, 9, 13, 23, 59, 59)
         test_filter = logjuggler.date_range_filter(
             start_test_date, end_test_date)
-        assert len(logjuggler.search_results(test_filter, log_lines)) == 4
+        assert len(list(logjuggler.search_results(test_filter, log_lines))) == 4
 
     def test_date_string_should_be_converted_to_date_object(self, log_lines):
         start_date = '2012-09-12 16:04:22'
         end_date = '2012-09-13 23:59:59'
         test_filter = logjuggler.date_range_filter(
             start_date, end_date)
-        assert len(logjuggler.search_results(test_filter, log_lines)) == 4
+        assert len(list(logjuggler.search_results(test_filter, log_lines))) == 4
 
 
 class TestLogLevelFilters(object):
     def test_debug_level(self, log_lines):
         test_filter = logjuggler.log_level_filter('DEBUG')
-        assert len(logjuggler.search_results(test_filter, log_lines)) == 3
+        assert len(list(logjuggler.search_results(test_filter, log_lines))) == 3
 
     def test_info_level(self, log_lines):
         test_filter = logjuggler.log_level_filter('INFO')
-        assert len(logjuggler.search_results(test_filter, log_lines)) == 0
+        assert len(list(logjuggler.search_results(test_filter, log_lines))) == 0
 
     def test_warn_level(self, log_lines):
         test_filter = logjuggler.log_level_filter('WARN')
-        assert len(logjuggler.search_results(test_filter, log_lines)) == 1
+        assert len(list(logjuggler.search_results(test_filter, log_lines))) == 1
 
     def test_not_existing_level(self, log_lines):
         test_filter = logjuggler.log_level_filter('xyz')
-        assert len(logjuggler.search_results(test_filter, log_lines)) == 0
+        assert len(list(logjuggler.search_results(test_filter, log_lines))) == 0
 
     def test_log_level_as_int(self, log_lines):
         test_filter = logjuggler.log_level_filter(234)
-        assert len(logjuggler.search_results(test_filter, log_lines)) == 0
+        assert len(list(logjuggler.search_results(test_filter, log_lines))) == 0
 
 
 class TestSessionIdFilter(object):
@@ -164,5 +164,7 @@ class TestSearchResults(object):
         test_filter = logjuggler.business_id_filter(bid=test_business_id)
         search_result = logjuggler.search_results(test_filter, log_lines)
         assert len([log.business_id for log in search_result]) == 2
-        assert isinstance(search_result[0].date, str)
+
+        search_result = logjuggler.search_results(test_filter, log_lines)
+        assert isinstance([item for item in search_result][0].date, str)
 

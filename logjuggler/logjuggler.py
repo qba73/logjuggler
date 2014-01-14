@@ -155,13 +155,19 @@ def time_str_to_datetime(timestring):
 
 
 def search_results(query_filter, logs):
-    """Return search results (list) for given query_filter (func) and logs."""
-    results = []
+    """Return generator that yields search results
+
+    Args:
+        query_filter: func
+        logs: generator obj (yields named tuple objects)
+
+    Returns:
+        generator obj
+    """
     for log in logs:
         result = query_filter(log)
         if result:
-            results.append(result)
-    return map(convert_to_timestamp, results)
+            yield convert_to_timestamp(result)
 
 
 def convert_to_timestamp(tpl):
@@ -269,22 +275,27 @@ def display_search_results(results):
 # functions for profiling with decorator
 
 def get_log_level(log_level, log_entries):
+    """Return a list with log leve search results."""
     return [res for res in search_results(log_level_filter(log_level), log_entries)]
 
 
 def get_sid(sid, log_entries):
+    """Return a list with sessionid search results."""
     return [res for res in search_results(session_id_filter(sid), log_entries)]
 
 
 def get_bid(bid, log_entries):
+    """Return a list wits business id search results."""
     return [res for res in search_results(business_id_filter(bid), log_entries)]
 
 
 def get_rid(rid, log_entries):
+    """Return a list with request id rearch results."""
     return [res for res in search_results(request_id_filter(rid), log_entries)]
 
 
 def get_dates(start_date, end_date, log_entries):
+    """Return a list with date range seach results."""
     return [res for res in (search_results(date_range_filter(
         start_date=arg_dict.get('start'), end_date=arg_dict.get('end')), log_entries))
     ]
