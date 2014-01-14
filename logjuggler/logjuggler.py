@@ -1,5 +1,72 @@
 #!/usr/bin/env python
 
+"""
+
+Logjuggler - a simple log parser.
+
+
+Usage:
+------
+
+    (venvweb)jakub@urababura:~/projects/logjuggler/logjuggler$ python logjuggler.py --file ../data/app.log --help
+    usage: logjuggler.py [-h] -f LOGFILE {loglevel,bid,sid,rid,date} ...
+
+    A simple log file parser.
+
+    positional arguments:
+        {loglevel,bid,sid,rid,date}
+                              Log filters
+
+    optional arguments:
+        -h, --help            show this help message and exit
+        -f LOGFILE, --file LOGFILE
+                              Log file to parse
+
+
+
+    (venvweb)jakub@urababura:~/projects/logjuggler/logjuggler$ python logjuggler.py --file ../data/app.log sid 34523
+    2012-09-13 16:04:22 DEBUG sid:34523 bid:1329 rid:65d33 message:Starting new session
+    2012-09-13 16:04:30 DEBUG sid:34523 bid:1329 rid:54f22 message:Authenticating User
+    2012-09-13 16:04:50 ERROR sid:34523 bid:1329 rid:54ff3 message:Missing Authentication token
+
+
+
+    (venvweb)jakub@urababura:~/projects/logjuggler/logjuggler$ python logjuggler.py --file ../data/app.log date -h
+    usage: logjuggler.py date [-h] start end
+
+    positional arguments:
+      start       Start date.
+      end         End date.
+
+    optional arguments:
+      -h, --help  show this help message and exit
+
+
+
+    (venvweb)jakub@urababura:~/projects/logjuggler/logjuggler$ python logjuggler.py --file ../data/app.log date '2012-09-13 16:00:22' '2012-09-13 16:04:45'
+    2012-09-13 16:04:22 DEBUG sid:34523 bid:1329 rid:65d33 message:Starting new session
+    2012-09-13 16:04:30 DEBUG sid:34523 bid:1329 rid:54f22 message:Authenticating User
+
+
+
+    (venvweb)jakub@urababura:~/projects/logjuggler/logjuggler$ python logjuggler.py --file ../data/app.log rid -h
+    usage: logjuggler.py rid [-h] rid
+
+    positional arguments:
+      rid         Show logs with request id.
+
+    optional arguments:
+      -h, --help  show this help message and exit
+
+
+
+    (venvweb)jakub@urababura:~/projects/logjuggler/logjuggler$ python logjuggler.py --file ../data/app.log rid 65d33
+    2012-09-13 16:04:22 DEBUG sid:34523 bid:1329 rid:65d33 message:Starting new session
+
+
+"""
+
+
 import collections
 import datetime
 import argparse
