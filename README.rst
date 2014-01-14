@@ -19,5 +19,6 @@ Features
 TODO:
 --------
 
+* Logging
 * Python3 support (Travis)
-* Add support for multiple filters
+* Support for multiple filters
